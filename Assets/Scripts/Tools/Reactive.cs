@@ -25,11 +25,11 @@ namespace Selectica.Tools
 
                 var old = this.value;
                 this.value = value;
-                Notify(value, old);
+                Notify(value, old, sameValue: false);
             }
         }
 
-        private void Notify(T newValue, T oldValue, bool sameValue = false)
+        private void Notify(T newValue, T oldValue, bool sameValue)
         {
             if (_toSubscribe.Count > 0)
             {

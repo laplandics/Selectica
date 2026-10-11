@@ -13,14 +13,23 @@ namespace Selectica
             }
         };
 
+        public static EntityData HarvestCursorData() => new()
+        {
+            entityName = "HarvestCursor",
+            entityComponents = new[]
+            {
+                ComponentConfig.HarvestCursorComponent(),
+            }
+        };
+        
+        
         public static EntityData SoilTileData(Vector3 position, string meshName) => new()
         {
             entityName = "SoilTile",
             entityComponents = new[]
             {
-                ComponentConfig.PositionComponent(position),
-                ComponentConfig.ColliderComponent(),
-                ComponentConfig.VisualComponent("Tile", meshName)
+                ComponentConfig.CellPositionComponent(position),
+                ComponentConfig.MeshComponent("Tile", meshName),
             }
         };
 
@@ -29,9 +38,23 @@ namespace Selectica
             entityName = "PlantTile",
             entityComponents = new[]
             {
-                ComponentConfig.PositionComponent(position),
+                ComponentConfig.CellPositionComponent(position),
+                ComponentConfig.SelectableComponent(),
+                ComponentConfig.HarvestableComponent(),
                 ComponentConfig.ColliderComponent(),
-                ComponentConfig.VisualComponent("Tile", meshName),
+                ComponentConfig.MeshComponent("Tile", meshName),
+                ComponentConfig.OutlineComponent()
+            }
+        };
+
+        public static EntityData GrinderData() => new()
+        {
+            entityName = "Grinder",
+            entityComponents = new[]
+            {
+                ComponentConfig.CellPositionComponent(Vector3.zero),
+                ComponentConfig.ColliderComponent(),
+                ComponentConfig.MeshComponent("Tile", "Grinder"),
                 ComponentConfig.SelectableComponent()
             }
         };

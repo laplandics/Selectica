@@ -19,6 +19,7 @@ namespace Selectica
         public static VisualTreeAsset GameUIRoot => Resources.Load<VisualTreeAsset>("UIAssets/GameUIRoot");
 
         public static GameObject CameraPrefab => Resources.Load<GameObject>("Prefabs/GameCamera");
+        public static GameObject HarvestCursorPrefab => Resources.Load<GameObject>("Prefabs/HarvestCursor");
         
         public static class AssetsLoader<T> where T : Object
         {

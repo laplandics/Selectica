@@ -13,12 +13,15 @@ namespace Selectica
             G.Reset();
             R.Reload();
             
-            ComponentsRegistry.CacheComponents();
+            Timer.Run();
+            Debugger.Run();
             
             G.Register(new UI());
+            G.Register(new Cells());
             G.Register(new Scenes());
             G.Register(new States());
             G.Register(new Inputs());
+            G.Register(new Systems());
             G.Register(new Entities());
             G.Register(new Coroutines());
             

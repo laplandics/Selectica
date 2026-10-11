@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Selectica
 {
-    public static class Vector3Serializer
+    public static class VectorSerializer
     {
         private const char SEPARATOR = ',';
 
@@ -18,9 +18,9 @@ namespace Selectica
         public static Vector3 FromEntry(string entry)
         {
             var split = entry.Split(SEPARATOR);
-            var x = float.Parse(split[0]);
-            var y = float.Parse(split[1]);
-            var z = float.Parse(split[2]);
+            var x = float.Parse(split[0], CultureInfo.InvariantCulture);
+            var y = float.Parse(split[1], CultureInfo.InvariantCulture);
+            var z = float.Parse(split[2], CultureInfo.InvariantCulture);
             return new Vector3(x, y, z);
         }
     }

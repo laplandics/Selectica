@@ -4,7 +4,7 @@ namespace Selectica
     {
         public virtual void SetParameters(StateParameters _) {}
         public abstract void OnEnter();
-        public abstract void OnKeyPressed(InputValues key);
+        public abstract void OnKeyPressed(InputValueType key);
         public abstract void OnExit();
     }
 

@@ -5,6 +5,8 @@ namespace Selectica
 {
     public class States
     {
+        public event Action<GameState> OnStateChanged; 
+        
         private GameState _currentState;
         private readonly Dictionary<Type, GameState> _cachedStates = new();
 
@@ -24,6 +26,8 @@ namespace Selectica
             
             if (parameters != null) _currentState.SetParameters(parameters);
             _currentState.OnEnter();
+            
+            OnStateChanged?.Invoke(_currentState);
         }
     }
 }

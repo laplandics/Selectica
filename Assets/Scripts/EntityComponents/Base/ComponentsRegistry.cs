@@ -26,7 +26,7 @@ namespace Selectica
                 foreach (var type in typesInAssembly)
                 {
                     if (type == null || type.IsAbstract || type.IsInterface) continue;
-                    if (!type.IsSubclassOf(typeof(EntityComponent))) continue;
+                    if (!type.IsSubclassOf(typeof(EntityComponent_d))) continue;
 
                     var key = type.Name;
                     if (ComponentsTypesMap.TryGetValue(key, out var existingType))
@@ -42,7 +42,7 @@ namespace Selectica
         private static Type GetType(string key) => ComponentsTypesMap.TryGetValue(key, out var type)
             ? type : throw new KeyNotFoundException($"{nameof(ComponentsRegistry)} key '{key}' was not found.");
 
-        public static EntityComponent CreateInstance(ComponentData data)
-        { var type = GetType(data.componentName); return (EntityComponent)Activator.CreateInstance(type, data); }
+        public static EntityComponent_d CreateInstance(ComponentData data)
+        { var type = GetType(data.componentName); return (EntityComponent_d)Activator.CreateInstance(type, data); }
     }
 }

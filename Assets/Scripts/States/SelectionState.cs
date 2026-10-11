@@ -1,47 +1,46 @@
-using UnityEngine;
+using System;
+using System.Collections;
 using UnityEngine.InputSystem;
 
 namespace Selectica
 {
     public class SelectionState : GameState
     {
-        private SelectionProvider _selected;
+        private bool _isDragging;
         
         public override void OnEnter()
-        {
-            
-        }
+        { G.Resolve<Inputs>().SwitchInputs(InputMapType.Gameplay); }
 
-        public override void OnKeyPressed(InputValues key)
+        public override void OnKeyPressed(InputValueType key)
         {
             switch (key)
             {
-                case InputValues.MouseKeyLeft: TrySelect(); break;
+                case InputValueType.MouseKeyLeft:
+                    if (_isDragging) return;
+                    G.Resolve<Coroutines>().Start(EnterHarvestStateRoutine());
+                    break;
             }
         }
 
-        private void TrySelect()
+        private IEnumerator EnterHarvestStateRoutine()
         {
-            var camera = Camera.main;
-            var mouse = Mouse.current;
-
-            if (camera == null || mouse == null) return;
-            var ray = camera.ScreenPointToRay(mouse.position.ReadValue());
-            var layer = LayerMask.NameToLayer("Selectables");
-
-            if (!Physics.Raycast(ray, out var hit, layer)) return;
-            var hitCollider = hit.collider;
+            _isDragging = true;
+            var startPos = Mouse.current.position.ReadValue();
             
-            if (hitCollider == null) return;
-            var selectionProvider = hitCollider.GetComponent<SelectionProvider>();
+            while (Mouse.current.leftButton.isPressed)
+            {
+                var delta = Mouse.current.position.ReadValue() - startPos;
+                if (Math.Abs(delta.x) > 25f || Math.Abs(delta.y) > 25f)
+                { _isDragging = false; EnterHarvestState(); yield break; }
+                
+                yield return null;
+            }
             
-            if (_selected == selectionProvider) { _selected.Deselect(); _selected = null; }
-            else { _selected?.Deselect(); _selected = selectionProvider; _selected.Select();}
+            _isDragging = false;
         }
+        
+        private void EnterHarvestState() => G.Resolve<States>().ChangeState<HarvestState>();
 
-        public override void OnExit()
-        {
-            
-        }
+        public override void OnExit() { }
     }
 }

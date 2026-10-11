@@ -16,7 +16,7 @@ namespace Selectica
             
             //DEBUG ONLY
             Debug.LogWarning("DEBUG: Loading game Scene");
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(0.5f);
             yield return G.Resolve<Scenes>().LoadScene(Scenes.GAME);
             //DEBUG ONLY
         }
