@@ -5,8 +5,11 @@ namespace Selectica
     [SelectionBase]
     public class EntityInstance : MonoBehaviour
     {
-        public Entity dataModel;
+        public Entity entity;
 
-        private void Awake() { gameObject.hideFlags = HideFlags.NotEditable; }
+        private void Awake()
+        {
+            gameObject.hideFlags = HideFlags.NotEditable;
+        }
     }
 }

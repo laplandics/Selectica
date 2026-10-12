@@ -1,86 +1,60 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Selectica.Tools;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Selectica
 {
     [Serializable]
-    public class Entity
+    public class Entity : IDisposable
     {
-        public string entityName;
         public string id;
         
-        public MeshFilter meshFilter;
-        public MeshRenderer meshRenderer;
+        [SerializeReference] public Reactive<bool> hasInstance = new(false);
+        [SerializeReference] public Reactive<MeshInfo> meshInfo = new(default);
+        [SerializeReference] public Reactive<CellIndex> cellIndex = new(default);
+        [SerializeReference] public Reactive<CollidersInfo> colliders = new(default);
         
-        public List<GameObject> colliderObjects = new();
-        [SerializeReference] public ReactiveList<ColliderRequest> colliderRequests = new();
+        [SerializeReference] public Reactive<bool> selectable = new(false);
+        [SerializeReference] public Reactive<bool> harvestable = new(false);
+        [SerializeReference] public Reactive<bool> selected = new(false);
+        [SerializeReference] public Reactive<bool> harvesting = new(false);
         
-        [SerializeReference] public Reactive<bool> selected = new();
-        [SerializeReference] public Reactive<CellIndex> currentCellIndex = new();
+        [SerializeReference] public Reactive<string> prefabName = new(string.Empty);
+        [SerializeReference] public Reactive<bool> hasBehaviour = new(false);
+        public Cell currentCell;
         
-        [SerializeReference] public Reactive<bool> harvesting = new();
-        [SerializeReference] public Reactive<float> harvestProgress = new();
+        private List<IDisposable> _subscriptions = new();
         
-        [SerializeReference] private List<EntityComponent_d> components_d;
-
-
-        public List<EntityComponent> components;
-        
-        
-        private ComponentData[] _componentsData;
-
-        public EntityInstance Instance { get; private set; }
-
-        public Entity(EntityData data)
+        public Entity()
         {
-            entityName = data.entityName;
             id = Guid.NewGuid().ToString();
-            components_d = new List<EntityComponent_d>();
-            _componentsData = data.entityComponents;
+            
+            Sub<InstanceMaker, bool>(hasInstance);
+            Sub<PrefabLoader, string>(prefabName);
+            Sub<MeshMaker, MeshInfo>(meshInfo);
+            Sub<CellBinder, CellIndex>(cellIndex);
+            Sub<ColliderMaker, CollidersInfo>(colliders);
+            Sub<SelectionsProvider, bool>(selectable);
+            Sub<HarvestProvider, bool>(harvestable);
+            Sub<BehaviourActivator, bool>(hasBehaviour);
         }
         
-        public void Spawn()
+        public void Dispose()
         {
-            G.Resolve<Entities>().RegisterEntity(this);
+            UnSub<InstanceMaker>();
+            UnSub<PrefabLoader>();
+            UnSub<MeshMaker>();
+            UnSub<CellBinder>();
+            UnSub<ColliderMaker>();
+            UnSub<SelectionsProvider>();
+            UnSub<HarvestProvider>();
+            UnSub<BehaviourActivator>();
             
-            var entityInstance = new GameObject(entityName);
-            Instance = entityInstance.AddComponent<EntityInstance>();
-            Instance.dataModel = this;
-
-            foreach (var componentData in _componentsData)
-            { AddComponent(ComponentsRegistry.CreateInstance(componentData)); }
+            _subscriptions.ForEach(x => x?.Dispose());
         }
 
-        public void AddComponent(EntityComponent_d component)
-        {
-            if (components_d.Contains(component)) return;
-            components_d.Add(component);
-            component.Bind(this);
-        }
-
-        public void RemoveComponent(string componentName, bool removeInstantly)
-        {
-            var component = components_d.FirstOrDefault(c => c.name == componentName);
-            if (component == null) return;
-
-            component.Unbind();
-            
-            if (!removeInstantly) return;
-            components_d.Remove(component);
-        }
-        
-        public void Despawn()
-        {
-            G.Resolve<Cells>().RemoveFromCell(id, Instance.transform.position);
-            components_d.ForEach(c => RemoveComponent(c.name, removeInstantly: false));
-            components_d.Clear();
-            
-            Object.Destroy(Instance.gameObject);
-            G.Resolve<Entities>().UnregisterEntity(this);
-        }
+        private void Sub<T, TE>(Reactive<TE> r) where T : EntitySystem =>
+        _subscriptions.Add(r.SubscribeSilently((nV, oV) => G.Resolve<Systems>().AddToSystem<T>(this, nV, oV)));
+        private void UnSub<T>() where T : EntitySystem => G.Resolve<Systems>().RemoveFromSystem<T>(this);
     }
 }

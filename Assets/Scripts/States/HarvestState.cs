@@ -7,11 +7,8 @@ namespace Selectica
 
         public override void OnKeyPressed(InputValueType key)
         {
-            switch (key)
-            {
-                case InputValueType.MouseKeyLeft: break;
-                default: EnterSelectionState(); break;
-            }
+            if (key == InputValueType.MouseKeyLeft) return;
+            EnterSelectionState();
         }
         
         private void EnterSelectionState() => G.Resolve<States>().ChangeState<SelectionState>();

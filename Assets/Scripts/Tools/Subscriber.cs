@@ -1,5 +1,5 @@
 using System;
-namespace Selectica.Tools
+namespace Selectica
 {
     public class Subscriber<T> : IDisposable
     {

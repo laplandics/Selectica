@@ -34,9 +34,6 @@ namespace Selectica
 
         private IEnumerator MainBoot()
         {
-            Main.IsPlaying = true;
-            yield return null;
-            
             G.Resolve<Inputs>().Activate();
             yield return null;
             

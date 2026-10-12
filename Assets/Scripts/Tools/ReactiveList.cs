@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Selectica.Tools
+namespace Selectica
 {
     [Serializable]
     public class ReactiveList<T>

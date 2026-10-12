@@ -13,15 +13,12 @@ namespace Selectica
 
         public override void OnKeyPressed(InputValueType key)
         {
-            switch (key)
-            {
-                case InputValueType.MouseKeyLeft:
-                    if (_isDragging) return;
-                    G.Resolve<Coroutines>().Start(EnterHarvestStateRoutine());
-                    break;
-            }
+            if (key != InputValueType.MouseKeyLeft) return;
+            if (_isDragging) return;
+           
+            G.Resolve<Coroutines>().Start(EnterHarvestStateRoutine());
         }
-
+        
         private IEnumerator EnterHarvestStateRoutine()
         {
             _isDragging = true;
@@ -30,8 +27,13 @@ namespace Selectica
             while (Mouse.current.leftButton.isPressed)
             {
                 var delta = Mouse.current.position.ReadValue() - startPos;
+                
                 if (Math.Abs(delta.x) > 25f || Math.Abs(delta.y) > 25f)
-                { _isDragging = false; EnterHarvestState(); yield break; }
+                {
+                    _isDragging = false;
+                    EnterHarvestState();
+                    yield break;
+                }
                 
                 yield return null;
             }

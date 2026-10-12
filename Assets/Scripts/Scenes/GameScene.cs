@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEngine;
 
 namespace Selectica
 {
@@ -12,56 +11,31 @@ namespace Selectica
             yield return G.Resolve<UI>().SetUI(R.GameUIRoot);
             yield return null;
             
-            new Entity(EntityConfig.CameraData(Grid.Snap(Vector3.zero))).Spawn();
-            yield return null;
+            var camEntity = new Entity();
+            camEntity.hasInstance.Value = true;
+            camEntity.cellIndex.Value = new CellIndex(0, 0);
+            camEntity.prefabName.Value = "GameCamera";
+            camEntity.hasBehaviour.Value = true;
             
-            EntityContainersManager.SetContainers();
-            yield return null;
+            var grinderEntity = new Entity();
+            grinderEntity.hasInstance.Value = true;
+            grinderEntity.meshInfo.Value = new MeshInfo("Grinder", "Tile");
+            grinderEntity.colliders.Value = new CollidersInfo(hasSelectionCollider: true, hasHarvestCollider: false);
+            grinderEntity.selectable.Value = true;
+            grinderEntity.cellIndex.Value = new CellIndex(0, 0);
             
-            var grinderEntity = new Entity(EntityConfig.GrinderData());
-            grinderEntity.Spawn();
-            EntityContainersManager.MoveIntoContainer(EntityContainerType.MachineryTilesContainer,
-                grinderEntity.Instance.transform);
-            yield return null;
+            var dirtTileEntity = new Entity();
+            dirtTileEntity.hasInstance.Value = true;
+            dirtTileEntity.meshInfo.Value = new MeshInfo("DirtTile", "Tile");
+            dirtTileEntity.cellIndex.Value = new CellIndex(0, -1);
             
-            // for (var z = -2; z <= 2; z++)
-            // {
-            //     for (var x = -2; x <= 2; x++)
-            //     {
-            //         var pos = new Vector3(x, 0, z);
-            //         if (pos == Vector3.zero) continue;
-            //         
-            //         var dirtTileEntity = new Entity(EntityConfig.SoilTileData(pos, "DirtTile"));
-            //         var plantTileEntity = new Entity(EntityConfig.PlantTileData(pos, "GrassTile"));
-            //         
-            //         dirtTileEntity.Spawn();
-            //         plantTileEntity.Spawn();
-            //         
-            //         EntityContainersManager.MoveIntoContainer(EntityContainerType.SoilTilesContainer,
-            //             dirtTileEntity.Instance.transform);
-            //         
-            //         EntityContainersManager.MoveIntoContainer(EntityContainerType.PlantTilesContainer,
-            //             plantTileEntity.Instance.transform);
-            //         
-            //         yield return new WaitForSeconds(0.1f);
-            //     }
-            // }
-
-            var pos = Vector3.back;
-            var dirtTileEntity = new Entity(EntityConfig.SoilTileData(pos, "DirtTile"));
-            var plantTileEntity = new Entity(EntityConfig.PlantTileData(pos, "GrassTile"));
-            
-            dirtTileEntity.Spawn();
-            plantTileEntity.Spawn();
-            
-            EntityContainersManager.MoveIntoContainer(EntityContainerType.SoilTilesContainer,
-                dirtTileEntity.Instance.transform);
-            
-            EntityContainersManager.MoveIntoContainer(EntityContainerType.PlantTilesContainer,
-                plantTileEntity.Instance.transform);
-            
-            var selectorEntity = new Entity(EntityConfig.HarvestCursorData());
-            selectorEntity.Spawn();
+            var grassTileEntity = new Entity();
+            grassTileEntity.hasInstance.Value = true;
+            grassTileEntity.meshInfo.Value = new MeshInfo("GrassTile", "Tile");
+            grassTileEntity.colliders.Value = new CollidersInfo(hasSelectionCollider: true, hasHarvestCollider: true);
+            grassTileEntity.selectable.Value = true;
+            grassTileEntity.harvestable.Value = true;
+            grassTileEntity.cellIndex.Value = new CellIndex(0, -1);
             
             G.Resolve<States>().ChangeState<SelectionState>();
             yield return null;
